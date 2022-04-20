@@ -14,4 +14,4 @@ result1 = adfuller(series, autolag='AIC')
 print(f'ADF Statistic: {result1[0]}')
 print(f'p-value: {result1[1]}')
 
-# 采用2018-2021巴南区数据检测平稳性，结果为满足评委平稳性
+# 采用2018-2021巴南区数据检测平稳性，结果为满足时间序列平稳性
