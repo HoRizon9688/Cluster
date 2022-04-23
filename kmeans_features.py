@@ -5,6 +5,7 @@ from sklearn import metrics
 import pandas as pd
 from sklearn.metrics import silhouette_score
 from sklearn.metrics import silhouette_samples
+from sklearn.metrics import calinski_harabasz_score
 
 df = pd.read_csv('mini_features.csv')
 
@@ -14,23 +15,29 @@ area_name = {'1': '渝北', '2': '江北', '3': '沙坪坝', '4': '南岸', '5':
            '28': '奉节', '29': '云阳', '30': '石柱', '31': '秀山', '32': '忠县', '33': '彭水', '34': '黔江', '35': '巫山', '36': '酉阳',
            '37': '巫溪'}
 
-k = 11
+k = 20
 
-score_list = []
+sc_score_list = []
+ch_score_list = []
+
 for i in range(2, k):
     km_cluster = KMeans(n_clusters=i)
     y_pred = km_cluster.fit_predict(df)
-    score = silhouette_score(df, y_pred)
-    score_list.append(score)
+    sc_score = silhouette_score(df, y_pred)
+    sc_score_list.append(sc_score)
+    ch_score = calinski_harabasz_score(df, y_pred)
+    ch_score_list.append(ch_score)
 
-plt.plot(list(range(2, k)), score_list)
+print(ch_score_list)
+
+plt.plot(list(range(2, k)), sc_score_list)
 plt.xticks(range(0, k, 1))
 plt.grid(linestyle='--')
 plt.xlabel("Number of Clusters Initialized")
 plt.ylabel("Silhouette score")
 plt.show()
 
-best_k = score_list.index(max(score_list)) + 2
+best_k = sc_score_list.index(max(sc_score_list)) + 2
 print("最优k值：{}".format(best_k))
 
 best_km = KMeans(n_clusters=best_k)
