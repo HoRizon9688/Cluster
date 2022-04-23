@@ -29,7 +29,6 @@ print(avg_price)
 np_array = np.array(avg_price).reshape(-1, 1)
 # plt.scatter(np_array, len(np_array) * [1], marker='o', s=4)
 # plt.show()
-
 km_cluster = KMeans(n_clusters=5)
 y_pred = km_cluster.fit_predict(np_array)
 print('聚类结果:\n', y_pred)
