@@ -1,11 +1,6 @@
-from tsfresh.examples.robot_execution_failures import download_robot_execution_failures, \
-    load_robot_execution_failures
-from tsfresh import extract_features
-from tsfresh import select_features
 from tsfresh import extract_features, extract_relevant_features, select_features
-from tsfresh.feature_extraction import ComprehensiveFCParameters
+from tsfresh.feature_extraction import ComprehensiveFCParameters, feature_calculators, MinimalFCParameters
 from tsfresh.utilities.dataframe_functions import impute
-from tsfresh import extract_relevant_features
 import pandas as pd
 
 
@@ -13,16 +8,17 @@ def run():
     df = pd.read_csv("merge_data.csv")
     print(df)
     extraction_settings = ComprehensiveFCParameters()
-    extracted_features = extract_features(df, column_id="id", column_sort="timestamp",
-                                          default_fc_parameters=extraction_settings,
+    extracted_features = extract_features(df, column_id="id", column_sort="timestamp", column_value='price',
+                                          default_fc_parameters=MinimalFCParameters(),
                                           impute_function=impute)
     print(extracted_features)
-
-    # extracted_features = extract_features(timeseries, column_id="id", column_sort="time")
+    extracted_features.to_csv('features.csv')
+    # extracted_features = extract_features(df, column_id="id", column_sort="time", column_value='price')
     # impute(extracted_features)
     # features_filtered = select_features(extracted_features, y)
-    # features_filtered_direct = extract_relevant_features(timeseries, y,
-    #                                                      column_id='id', column_sort='time')
+
+    # features_filtered_direct = extract_relevant_features(df, y,
+    #                                                      column_id='id', column_sort='time', column_value='price')
     # print(features_filtered_direct)
 
 
