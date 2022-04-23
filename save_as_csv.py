@@ -2,7 +2,7 @@ import xlrd
 import os
 import pandas as pd
 
-path = './test/'
+path = './'
 
 # file_list = os.listdir(path)
 # for i in file_list:
