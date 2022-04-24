@@ -17,28 +17,21 @@ for i in cluster_id:
     temp = df['price'][i * 48:i * 48 + 48]
     price_list.append(temp.tolist())
 
-# print(price_list)
+print(price_list)
+
+cluster_center = []
+for i in range(48):
+    value = 0
+    for j in price_list:
+        value += j[i]
+    cluster_center.append(value/len(price_list))
+print(cluster_center)
 
 fig, ax = plt.subplots(figsize=(12, 8))
 x = np.linspace(1, 48, 48)
 for k in range(len(price_list)):
     name = area_name[str(cluster_id[k] + 1)]
     ax.plot(x, price_list[k], label=name)
+ax.plot(x, cluster_center, label='聚类中心', linestyle='--', color='black')
 ax.legend(bbox_to_anchor=(1.1, 1))
 plt.show()
-
-
-# price_list = []
-# for i in cluster_id:
-#     temp = df['price'][i * 48:i * 48 + 48]
-#     price_list.append(temp.tolist())
-#
-# # print(price_list)
-#
-# fig, ax = plt.subplots()
-# x = np.linspace(1, 48, 48)
-# for k in range(len(price_list)):
-#     name = area_name[str(cluster_id[k]+1)]
-#     ax.plot(x, price_list[k], label=name)
-# ax.legend()
-# plt.show()

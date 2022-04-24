@@ -11,14 +11,22 @@ from sklearn.metrics import calinski_harabasz_score
 def plot_clustering(df, area_name, cluster):
     cluster_id = cluster.tolist()
     price_list = []
+    cluster_center = []
     for i in cluster_id:
         temp = df['price'][i * 48:i * 48 + 48]
         price_list.append(temp.tolist())
+    for i in range(48):
+        value = 0
+        for j in price_list:
+            value += j[i]
+        cluster_center.append(value / len(price_list))
+    print(cluster_center)
     fig, ax = plt.subplots(figsize=(10, 6))
     x = np.linspace(1, 48, 48)
     for j in range(len(price_list)):
         name = area_name[str(cluster_id[j] + 1)]
         ax.plot(x, price_list[j], label=name)
+    ax.plot(x, cluster_center, label='聚类中心', linestyle='--', color='black')
     ax.legend(bbox_to_anchor=(1.12, 1), loc='upper right')
     plt.show()
 
@@ -34,11 +42,11 @@ area_name = {'1': '渝北', '2': '江北', '3': '沙坪坝', '4': '南岸', '5':
 
 k = 20
 
-sc_score_list = []
-ch_score_list = []
+sc_score_list = []  # 轮廓系数
+ch_score_list = []  # CH系数
 
 for i in range(2, k):
-    km_cluster = KMeans(n_clusters=i)
+    km_cluster = KMeans(n_clusters=i, random_state=0)
     y_pred = km_cluster.fit_predict(df)
     sc_score = silhouette_score(df, y_pred)
     sc_score_list.append(sc_score)
@@ -46,6 +54,7 @@ for i in range(2, k):
     ch_score_list.append(ch_score)
 
 print(ch_score_list)
+print(sc_score_list)
 
 plt.plot(list(range(2, k)), sc_score_list)
 plt.xticks(range(0, k, 1))
@@ -57,7 +66,7 @@ plt.show()
 best_k = sc_score_list.index(max(sc_score_list)) + 2
 print("最优k值：{}".format(best_k))
 
-best_km = KMeans(n_clusters=best_k)
+best_km = KMeans(n_clusters=best_k, random_state=0)
 y_pred = best_km.fit_predict(df)
 # print(y_pred)
 
