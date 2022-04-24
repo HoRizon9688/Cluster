@@ -7,7 +7,24 @@ from sklearn.metrics import silhouette_score
 from sklearn.metrics import silhouette_samples
 from sklearn.metrics import calinski_harabasz_score
 
+
+def plot_clustering(df, area_name, cluster):
+    cluster_id = cluster.tolist()
+    price_list = []
+    for i in cluster_id:
+        temp = df['price'][i * 48:i * 48 + 48]
+        price_list.append(temp.tolist())
+    fig, ax = plt.subplots(figsize=(10, 6))
+    x = np.linspace(1, 48, 48)
+    for j in range(len(price_list)):
+        name = area_name[str(cluster_id[j] + 1)]
+        ax.plot(x, price_list[j], label=name)
+    ax.legend(bbox_to_anchor=(1.12, 1), loc='upper right')
+    plt.show()
+
+
 df = pd.read_csv('mini_features.csv')
+df2 = pd.read_csv('merge_data.csv')
 
 area_name = {'1': '渝北', '2': '江北', '3': '沙坪坝', '4': '南岸', '5': '九龙坡', '6': '渝中', '7': '巴南', '8': '大渡口', '9': '北碚',
            '10': '万州', '11': '璧山', '12': '合川', '13': '永川', '14': '江津', '15': '涪陵', '16': '铜梁', '17': '长寿', '18': '潼南',
@@ -46,6 +63,7 @@ y_pred = best_km.fit_predict(df)
 
 for j in range(best_k):
     cluster = np.where(y_pred == j)[0]
+    plot_clustering(df2, area_name, cluster)
     id_list = np.array([1] * cluster.size) + cluster
     name_list = []
     for city_id in id_list:
