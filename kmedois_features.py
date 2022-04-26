@@ -6,28 +6,7 @@ from sklearn.metrics import silhouette_score
 from sklearn.metrics import silhouette_samples
 from sklearn.metrics import calinski_harabasz_score
 from tslearn.clustering import KShape
-
-
-def plot_clustering(df, area_name, cluster):
-    cluster_id = cluster.tolist()
-    price_list = []
-    cluster_center = []
-    for i in cluster_id:
-        temp = df['price'][i * 48:i * 48 + 48]
-        price_list.append(temp.tolist())
-    for i in range(48):
-        value = 0
-        for j in price_list:
-            value += j[i]
-        cluster_center.append(value / len(price_list))
-    fig, ax = plt.subplots(figsize=(10, 6))
-    x = np.linspace(1, 48, 48)
-    for j in range(len(price_list)):
-        name = area_name[str(cluster_id[j] + 1)]
-        ax.plot(x, price_list[j], label=name)
-    ax.plot(x, cluster_center, label='聚类中心', linestyle='--', color='black')
-    ax.legend(bbox_to_anchor=(1.12, 1), loc='upper right')
-    plt.show()
+from plot_result import *
 
 
 df = pd.read_csv('mini_features.csv')
@@ -84,8 +63,10 @@ best_km = KMedoids(n_clusters=best_k, random_state=0)
 y_pred = best_km.fit_predict(df)
 # print(y_pred)
 
+cluster_list = []
 for j in range(best_k):
     cluster = np.where(y_pred == j)[0]
+    cluster_list.append(cluster)
     plot_clustering(df2, area_name, cluster)
     id_list = np.array([1] * cluster.size) + cluster
     name_list = []
@@ -94,3 +75,5 @@ for j in range(best_k):
         name_list.append(city_name)
     print("cluster {}: {}".format(j + 1, name_list), end='   ')
     print("共{}个城市".format(cluster.size))
+
+plot_all(df2, cluster_list)
