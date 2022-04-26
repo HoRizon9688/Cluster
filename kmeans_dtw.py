@@ -44,7 +44,7 @@ for i in range(37):
     data = df.iloc[i*48:i*48+48, 2].tolist()
     df_list.append(data)
 time_series_data = to_time_series_dataset(df_list)
-X = TimeSeriesScalerMeanVariance().fit_transform(time_series_data)
+# X = TimeSeriesScalerMeanVariance().fit_transform(time_series_data)
 
 k = 10
 
@@ -58,7 +58,6 @@ for i in range(2, k):
     sc_score_list.append(sc_score)
     inertia_list.append(km.inertia_)
 
-print(inertia_list)
 
 plt.plot(list(range(2, k)), inertia_list)
 plt.xticks(range(0, k, 1))
