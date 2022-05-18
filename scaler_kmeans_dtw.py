@@ -23,6 +23,7 @@ for i in range(37):
     data = df.iloc[i*48:i*48+48, 2].tolist()
     df_list.append(data)
 time_series_data = to_time_series_dataset(df_list)
+# 进行缩放实现标准化
 X = TimeSeriesScalerMeanVariance().fit_transform(time_series_data)
 
 k = 10
