@@ -23,19 +23,17 @@ for i in range(37):
     data = df.iloc[i*48:i*48+48, 2].tolist()
     df_list.append(data)
 time_series_data = to_time_series_dataset(df_list)
-# 进行缩放实现标准化
-X = TimeSeriesScalerMeanVariance().fit_transform(time_series_data)
+# X = TimeSeriesScalerMeanVariance().fit_transform(time_series_data)
 
 k = 10
 
 sc_score_list = []  # 轮廓系数
 inertia_list = []
 
-
 for i in range(2, k):
-    km = TimeSeriesKMeans(n_clusters=i, n_init=2, random_state=0, metric="dtw")
-    y_pred = km.fit_predict(X)
-    sc_score = silhouette_score(X, y_pred, metric="dtw")
+    km = TimeSeriesKMeans(n_clusters=i, n_init=2, random_state=0, metric="euclidean")
+    y_pred = km.fit_predict(time_series_data)
+    sc_score = silhouette_score(time_series_data, y_pred, metric="euclidean")
     sc_score_list.append(sc_score)
     inertia_list.append(km.inertia_)
 
@@ -54,11 +52,11 @@ plt.xlabel("Number of Clusters Initialized")
 plt.ylabel("Silhouette score")
 plt.show()
 
-best_k = 5
+best_k = 4
 
-km = TimeSeriesKMeans(n_clusters=best_k, n_init=2, random_state=0, metric="dtw")
-y_pred = km.fit_predict(X)
-print(y_pred)
+km = TimeSeriesKMeans(n_clusters=best_k, n_init=2, random_state=0, metric="euclidean")
+y_pred = km.fit_predict(time_series_data)
+# print(y_pred)
 
 cluster_list = []
 for j in range(best_k):

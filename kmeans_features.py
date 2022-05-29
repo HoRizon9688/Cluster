@@ -1,13 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
-from sklearn import metrics
 import pandas as pd
 from sklearn.metrics import silhouette_score
-from sklearn.metrics import silhouette_samples
 from sklearn.metrics import calinski_harabasz_score
 from plot_result import *
-
+from sklearn.manifold import TSNE
 
 df = pd.read_csv('mini_features.csv')
 df2 = pd.read_csv('merge_data.csv')
@@ -22,7 +20,7 @@ k = 20
 
 sc_score_list = []  # 轮廓系数
 ch_score_list = []  # CH系数
-inertia_list = []
+inertia_list = []  # 簇内平方和
 
 for i in range(2, k):
     km_cluster = KMeans(n_clusters=i, random_state=0)
@@ -33,30 +31,27 @@ for i in range(2, k):
     ch_score_list.append(ch_score)
     inertia_list.append(km_cluster.inertia_)
 
-# print(ch_score_list)
-# print(sc_score_list)
-# print(inertia_list)
 
-plt.plot(list(range(2, k)), ch_score_list)
-plt.xticks(range(0, k, 1))
-plt.grid(linestyle='--')
-plt.xlabel("Number of Clusters Initialized")
-plt.ylabel("Calinski Harabasz score")
-plt.show()
-
-plt.plot(list(range(2, k)), sc_score_list)
-plt.xticks(range(0, k, 1))
-plt.grid(linestyle='--')
-plt.xlabel("Number of Clusters Initialized")
-plt.ylabel("Silhouette score")
-plt.show()
-
-plt.plot(list(range(2, k)), inertia_list)
-plt.xticks(range(0, k, 1))
-plt.grid(linestyle='--')
-plt.xlabel("Number of Clusters Initialized")
-plt.ylabel("Inertia")
-plt.show()
+# plt.plot(list(range(2, k)), ch_score_list)
+# plt.xticks(range(0, k, 1))
+# plt.grid(linestyle='--')
+# plt.xlabel("Number of Clusters Initialized")
+# plt.ylabel("Calinski Harabasz score")
+# plt.show()
+#
+# plt.plot(list(range(2, k)), sc_score_list)
+# plt.xticks(range(0, k, 1))
+# plt.grid(linestyle='--')
+# plt.xlabel("Number of Clusters Initialized")
+# plt.ylabel("Silhouette score")
+# plt.show()
+#
+# plt.plot(list(range(2, k)), inertia_list)
+# plt.xticks(range(0, k, 1))
+# plt.grid(linestyle='--')
+# plt.xlabel("Number of Clusters Initialized")
+# plt.ylabel("Inertia")
+# plt.show()
 
 best_k = sc_score_list.index(max(sc_score_list)) + 2
 print("最优k值：{}".format(best_k))
@@ -66,17 +61,56 @@ best_km = KMeans(n_clusters=best_k, random_state=0)
 y_pred = best_km.fit_predict(df)
 # print(y_pred)
 
+# cluster_list = []
+# for j in range(best_k):
+#     cluster = np.where(y_pred == j)[0]
+#     cluster_list.append(cluster.tolist())
+#     plot_clustering(df2, area_name, cluster)
+#     id_list = np.array([1] * cluster.size) + cluster
+#     name_list = []
+#     for city_id in id_list:
+#         city_name = area_name[str(city_id)]
+#         name_list.append(city_name)
+#     print("cluster {}: {}".format(j + 1, name_list), end='   ')
+#     print("共{}个城市".format(cluster.size))
+#
+# plot_all(df2, cluster_list)
+
+
+
+
+r1 = pd.Series(best_km.labels_).value_counts()  # 统计各个类别的数目
+r2 = pd.DataFrame(best_km.cluster_centers_)  # 找出聚类中心
+
+r = pd.concat([r2, r1], axis=1)  # 横向连接（0是纵向），得到聚类中心对应的类别下的数目
+r.columns = list(df.columns) + [u'类别数目']  # 重命名表头
+print(r)
+
+r = pd.concat([df, pd.Series(best_km.labels_, index=df.index)], axis=1)  # 详细输出每个样本对应的类别
+r.columns = list(df.columns) + [u'聚类类别']
+print(r)
+
+tsne = TSNE()
+tsne.fit_transform(df)
+tsne = pd.DataFrame(tsne.embedding_, index=df.index)
+
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+
 cluster_list = []
-for j in range(best_k):
-    cluster = np.where(y_pred == j)[0]
-    cluster_list.append(cluster.tolist())
-    plot_clustering(df2, area_name, cluster)
+color_list = ['dodgerblue', 'darkorange', 'mediumpurple', 'dimgrey']
+marker_list = ['*', '.', '^', ',']
+for i in range(best_k):
+    cluster = np.where(y_pred == i)[0]
+    cluster_list.append(cluster)
     id_list = np.array([1] * cluster.size) + cluster
     name_list = []
     for city_id in id_list:
         city_name = area_name[str(city_id)]
         name_list.append(city_name)
-    print("cluster {}: {}".format(j + 1, name_list), end='   ')
+    print("cluster {}: {}".format(i + 1, name_list), end='   ')
     print("共{}个城市".format(cluster.size))
-
-plot_all(df2, cluster_list)
+    d = tsne[r[u'聚类类别'] == i]
+    plt.scatter(d[0], d[1], color=color_list[i], marker=marker_list[i], label="第{}类".format(i+1))
+plt.legend()
+plt.show()

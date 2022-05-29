@@ -12,7 +12,7 @@ from sklearn import metrics
 def run():
     df = pd.read_csv("merge_data.csv")
     print(df)
-    extracted_features = extract_features(df, column_id="id", column_sort="timestamp", default_fc_parameters=MinimalFCParameters())
+    extracted_features = extract_features(df, column_id="id", column_sort="timestamp")
     print(extracted_features)
     return extracted_features
 

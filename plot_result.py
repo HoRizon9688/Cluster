@@ -25,7 +25,7 @@ def plot_clustering(df, area_name, cluster):
 
 
 def plot_all(df, cluster_list):
-    color_list = ['darkgreen', 'darkorange', 'red', 'mediumturquoise', 'royalblue', 'mediumpurple', 'deeppink', 'dimgrey']
+    color_list = ['darkorange', 'red', 'mediumturquoise', 'royalblue', 'mediumpurple', 'deeppink', 'dimgrey']
     fig, ax = plt.subplots(figsize=(16, 10))
     for k in range(len(cluster_list)):
         cluster_id = cluster_list[k]

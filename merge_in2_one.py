@@ -30,3 +30,7 @@ for k in range(len(info_list)):
     merge_worksheet.write(k + 1, 1, info_list[k][1])
     merge_worksheet.write(k + 1, 2, info_list[k][2])
 merge_workbook.save('merge_data.xls')
+
+path = './'
+data_xls = pd.read_excel(path + 'merge_data.xls', sheet_name='sheet1')
+data_xls.to_csv(path + 'merge_data.csv', encoding='utf-8', index=False)
